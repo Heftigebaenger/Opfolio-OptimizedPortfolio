@@ -1,9 +1,42 @@
-<html>
-    <head>
-        <title>Home page</title>
-    </head>
-    <body>
-        <h1>Home Page</h1>
-        <p1>{{content}}</p1>
-    </body>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpFolio</title>
+    
+</head>
+<body>
+    <div><a>Dummy 1 Menu</a></div>
+    <div class="depotStatus">
+        <div class="depotOuterSpacer"></div>
+        <div id="depotwert"> <p class="depotValues">Depotwert : {{depotValue[0]}}</p></div>
+        <div id="depotMiddleSpacer"></div>
+        <div id="depotdiff"><p class="depotValues">Differenzkauf : {{depotValue[1]}}</p></div>
+        <div class="depotOuterSpacer"></div>
+    </div>
+    <div id="stockTableWrapper">
+        <div class="stockTableSpacer"> </div>
+        <table id="stockTable">
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Curr. price</th>
+            </tr>
+            {%for stocks in stockList %}
+            
+            <tr>
+                {% for x in stocks %}
+                <td>{{x}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="stockTableSpacer"> </div>
+    </div>
+    
+    
+</body>
 </html>
