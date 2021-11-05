@@ -1,30 +1,35 @@
+<!-- Extends the base.html for the basic structure-->
 {%extends "base.html"%}
+
 {%block head%}
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <title>OpFolio</title>
 {%endblock%}
     
-    
-
 {%block content%}
-    
+    <!-- Creats two Boxes with the Depotvalues-->
     <div class="depotStatus">
+        <!-- The Spacer is only used to make some space on the left-->
         <div class="depotOuterSpacer"></div>
+        <!-- Displays the Depotvalue-->
         <div id="depotwert"> 
+            <!-- Get the Depotvalues form the depotValue Array given by the python file-->
             <p class="depotValues">Depotwert : {{depotValue[0]}}</p>
             <p class="depotDiff">{{depotValue[2]}}|{{depotValue[3]}}</p>
         </div>
         <div id="depotMiddleSpacer"></div>
         <div id="depotKaufwert">
+            <!-- Get the BuyDepotvalues form the depotValue Array given by the python file-->
             <p class="depotValues">Kaufwert : {{depotValue[1]}}</p>
             <p class="depotDiff">{{depotValue[4]}} € | {{depotValue[5]}} %</p>
         </div>
         <div class="depotOuterSpacer"></div>
     </div>
+    <!-- Creats a table for Stocks-->
     <div id="stockTableWrapper">
-        
         <table id="stockTable">
             <tr>
+                <!-- The first Collum of the Table-->
                 <th>Name</th>
                 <th>Quantity</th>
                 <th>Curr. price</th>
@@ -33,15 +38,15 @@
                 <th>Diff %/ab</th>
                 <th>Kaufkurs/Kaufwert </th>
             </tr>
+                <!-- For Every WKN create a new Collum and fill the cells with the information-->
             {%for key in stockList %}           
             <tr>  
                 {% for x in stockList[key] %}
+                <!-- Creats a cell with a link to the stockpage-->
                 <td> <a href="stock/{{key}}">{{x}}</a></td>
                 {% endfor %}               
             </tr>
             {% endfor %}
         </table>
-        
     </div>
-    
 {%endblock%}

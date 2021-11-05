@@ -1,5 +1,4 @@
-
-
+/*Boxes at the top with the Depotvalues*/
 #depotwert {
     background-color: rgb(56, 56, 58);
     height: 80px;
@@ -13,7 +12,6 @@
     font-weight: 300;
 }
 #depotKaufwert {
-    
     background-color: rgb(56, 56, 58);
     font-weight: bold;
     height: 80px;
@@ -34,7 +32,8 @@
 }
 
 
-
+/*Table with stocks*/
+/*The Wrapper is used to get some space to the left and right for the table*/
 #stockTableWrapper{
     margin-top: 100px;
     margin-right: 10%;

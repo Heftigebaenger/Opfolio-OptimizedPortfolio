@@ -1,3 +1,12 @@
+<!--
+    The base.html exdents the basic structure of a html side
+    This includes the Navbar
+    Every other html file needs to extend this file via {%extends "base.html"%}
+
+    You also need to define these two blocks:
+    {%block head%}{%endblock%} For additional html ines in the header
+    {% block content %}{%endblock%} For additional html lines in the body
+-->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -9,6 +18,7 @@
     {%endblock%}
 </head>
 <body>
+    <!-- The NavMenu of the Webpage-->
     <div id="menu">
         <a href="/">Home</a>
         <a href="">Test</a>
