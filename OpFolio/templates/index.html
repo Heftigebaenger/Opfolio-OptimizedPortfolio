@@ -12,9 +12,15 @@
     <div><a>Dummy 1 Menu</a></div>
     <div class="depotStatus">
         <div class="depotOuterSpacer"></div>
-        <div id="depotwert"> <p class="depotValues">Depotwert : {{depotValue[0]}}</p></div>
+        <div id="depotwert"> 
+            <p class="depotValues">Depotwert : {{depotValue[0]}}</p>
+            <p class="depotDiff">{{depotValue[2]}}|{{depotValue[3]}}</p>
+        </div>
         <div id="depotMiddleSpacer"></div>
-        <div id="depotdiff"><p class="depotValues">Differenzkauf : {{depotValue[1]}}</p></div>
+        <div id="depotKaufwert">
+            <p class="depotValues">Kaufwert : {{depotValue[1]}}</p>
+            <p class="depotDiff">{{depotValue[4]}} € | {{depotValue[5]}} %</p>
+        </div>
         <div class="depotOuterSpacer"></div>
     </div>
     <div id="stockTableWrapper">
@@ -24,6 +30,10 @@
                 <th>Name</th>
                 <th>Quantity</th>
                 <th>Curr. price</th>
+                <th>WKN</th>
+                <th>Typ</th>
+                <th>Diff %/ab</th>
+                <th>Kaufkurs/Kaufwert </th>
             </tr>
             {%for stocks in stockList %}
             

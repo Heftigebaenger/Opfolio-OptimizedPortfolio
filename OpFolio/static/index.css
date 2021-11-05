@@ -13,17 +13,21 @@ body {
     width: 30%;
     float: left;
     text-align: center;
-    line-height: 80px;
+    line-height: 40px;
     font-weight: bold;
 }
-#depotdiff {
+.depotDiff{
+    font-weight: 300;
+}
+#depotKaufwert {
+    
     background-color: rgb(56, 56, 58);
     font-weight: bold;
     height: 80px;
     width: 30%;
     float: left;
     text-align: center;
-    line-height: 80px;
+    line-height: 40px;
 }
 #depotMiddleSpacer {
     height: 80px;
