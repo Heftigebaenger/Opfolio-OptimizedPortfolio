@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
+{%extends "base.html"%}
+{%block head%}
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpFolio</title>
+{%endblock%}
     
-</head>
-<body>
-    <div><a>Dummy 1 Menu</a></div>
+    
+
+{%block content%}
+    
     <div class="depotStatus">
         <div class="depotOuterSpacer"></div>
         <div id="depotwert"> 
@@ -24,7 +22,7 @@
         <div class="depotOuterSpacer"></div>
     </div>
     <div id="stockTableWrapper">
-        <div class="stockTableSpacer"> </div>
+        
         <table id="stockTable">
             <tr>
                 <th>Name</th>
@@ -35,18 +33,15 @@
                 <th>Diff %/ab</th>
                 <th>Kaufkurs/Kaufwert </th>
             </tr>
-            {%for stocks in stockList %}
-            
-            <tr>
-                {% for x in stocks %}
-                <td>{{x}}</td>
-                {% endfor %}
+            {%for key in stockList %}           
+            <tr>  
+                {% for x in stockList[key] %}
+                <td> <a href="stock/{{key}}">{{x}}</a></td>
+                {% endfor %}               
             </tr>
             {% endfor %}
         </table>
-        <div class="stockTableSpacer"> </div>
+        
     </div>
     
-    
-</body>
-</html>
+{%endblock%}

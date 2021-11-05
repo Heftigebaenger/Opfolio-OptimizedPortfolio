@@ -1,12 +1,5 @@
-*{
-    margin: 0;
-    
-}
-body {
-    background-color: rgb(40, 40, 41);
-    color: rgb(228, 228, 228);
-    font-family: Arial, Helvetica, sans-serif
-}
+
+
 #depotwert {
     background-color: rgb(56, 56, 58);
     height: 80px;
@@ -72,7 +65,8 @@ body {
     border-bottom: 2px solid rgb(139, 139, 139);
     background-color: rgb(56, 56, 58);
 }
-.stockTableSpacer{
-
+#stockTable a{
+    text-decoration: none;
+    color:rgb(228, 228, 228);
 }
 
