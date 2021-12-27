@@ -1,7 +1,14 @@
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask, redirect, url_for, render_template, jsonify
+import requests
+import time, json
+from flask import request
 # Get the app form Flask package
+# apikey for alphaventage
+apikeyAlpha = "EBYN9X417QJPRW0H"
+# apikey for ameritrade
+apikeyAmeri = "96I1BNR5FXVTRTMNASI2Z7IPYG07MG9P"
 app = Flask(__name__)
-
+date = str(int(round(time.time() * 1000)))
 # Globalvariable for your Depot
 
 depotwert = 0
@@ -13,9 +20,9 @@ kaufwertDiffPro = 0
 
 # Dictionary with Stocks transactions: 
 # Key = WKN of the Stock, Value = Array[Name,Quantity,Curr. Value,WKN,Type,Difference,Buy Value]
-stocks = {  'R92E92':["MSCI World",20,103.32,"R92E92","ETF",0.31,101.01],
-            'A30E59':["MSCI EM",10,83.07,"A30E59","ETF",0.1,81.01],
-            'K10594':["Alibaba",80,19.41,"K10594","Aktie",0.3,67.04]}
+stocks = {  'BNTX':["BionTech",20,103.32,"BNTX","Aktie",0.31,101.01],
+            'AAPL':["Apple",10,83.07,"AAPL","Aktie",0.1,81.01],
+            'BABA':["Alibaba",80,19.41,"BABA","Aktie",0.3,67.04]}
 
 # Functions to Calculate the Depotvalues based on the transactions
 def calcDepotwert():
@@ -62,6 +69,44 @@ def stockpage(wkn):
     # stock = Array[Name,Quantity,Curr. Value,WKN,Type,Difference,Buy Value]
     return render_template("stock.html",stock=stocks[wkn])
 
+@app.route("/stock/api/<symbol>", methods=["GET"])
+def apidata(symbol):
+    apiStockData = {
+        "info":{},
+        "lastMonth":{},
+        "quotes": {}
+    }
+    # url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=&apikey='+apikey
+    # url = "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=apple&apikey=" + apikey
+
+    symbol = request.headers.get("symbol")
+    # url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol="+symbol+"&apikey=" + apikey
+    apiStockData["info"] = apiAmeriFundamental(symbol)
+    apiStockData["lastMonth"] = apiAmeriLastMonthData(symbol)
+    apiStockData["quotes"] = apiAmeriQuotes(symbol)
+    return json.dumps(apiStockData)
 # Runs the app 
+
+def apiAmeriFundamental(symbol):
+    url = "https://api.tdameritrade.com/v1/instruments?apikey="+apikeyAmeri+"&symbol="+symbol+"&projection=fundamental"
+    r = requests.get(url)
+    data = r.json()
+    data = data[symbol]
+    return data
+
+def apiAmeriLastMonthData(symbol):
+    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=month&period=1&frequencyType=daily&frequency=1&endDate="+date+"&needExtendedHoursData=true"
+    r = requests.get(url)
+    data = r.json()
+    return data
+
+def apiAmeriQuotes(symbol):
+    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/quotes?apikey=" + apikeyAmeri
+    r = requests.get(url)
+    data = r.json()
+    data = data[symbol]
+    return data
+
+
 if __name__ == "__main__":
     app.run(debug=True)
