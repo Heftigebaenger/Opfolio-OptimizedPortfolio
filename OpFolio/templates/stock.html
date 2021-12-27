@@ -1,7 +1,13 @@
 {%extends "base.html"%}
 {%block head%}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.js"></script>
+    <script src="{{ url_for('static', filename='stock.js') }}"></script>
     <title>Stock: {{stock[0]}}</title>
 {%endblock%}
 {%block content%}
-    <p>{{stock}}</p>
+    <div id ="mainDiv">
+    </div>
+    <div>
+        <canvas id="myChart" style="width:100%;max-width:700px;max-height:400px;"></canvas>
+    </div>
 {%endblock%}
