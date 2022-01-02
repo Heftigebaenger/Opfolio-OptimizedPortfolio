@@ -78,10 +78,11 @@ def stockpage(wkn):
 @app.route("/stock/api/<symbol>", methods=["GET"])
 def apidata(symbol):
     
-    stockData = Stock(symbol,{},{},{})
+    stockData = Stock(symbol,{},{},{},{})
     stockData.lastMonth = apiAmeriLastMonthData(symbol)
     stockData.informations = apiAmeriQuotes(symbol)
     stockData.today = apiAmeriToday(symbol)
+    stockData.last6Month = apiAmeriLast6MonthData(symbol)
     symbol = request.headers.get("symbol")
     # url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol="+symbol+"&apikey=" + apikey
     return json.dumps(stockData.__dict__)
@@ -100,9 +101,24 @@ def apiAmeriLastMonthData(symbol):
     data = r.json()
     return data
 
+def apiAmeriLast6MonthData(symbol):
+    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=month&period=6&frequencyType=daily&frequency=1&endDate="+date+"&needExtendedHoursData=true"
+    r = requests.get(url)
+    data = r.json()
+    return data
+
 def apiAmeriToday(symbol):
-    date = str(int(round(time.time() * 1000)))
-    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=day&period=1&frequencyType=minute&frequency=5&endDate="+date+"&needExtendedHoursData=false"
+    today = int(round(time.time() * 1000))- 10000
+    yesterday = today - 86400000
+    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=day&period=1&frequencyType=minute&frequency=5&endDate="+str(today)+"&startDate="+str(yesterday)+"&needExtendedHoursData=false"
+    r = requests.get(url)
+    data = r.json()
+    try:
+        if data["candles"][-1]["open"] == 0:
+            data["candles"].pop()
+    except :
+        print("No candle")
+    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=day&period=1&frequencyType=minute&frequency=5&endDate="+str(today)+"&needExtendedHoursData=false"
     r = requests.get(url)
     data = r.json()
     return data
