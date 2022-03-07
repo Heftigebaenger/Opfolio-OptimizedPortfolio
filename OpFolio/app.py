@@ -1,14 +1,18 @@
+from calendar import month
+from re import S
 from flask import Flask, redirect, url_for, render_template, jsonify
 import requests
 import time, json
 from flask import request
 from stock import Stock 
-
-
+from alphavantageAPI import AlphavantageAPI
+from tradingAPI import TradingApi
+from ameriTradeAPI import AmeriTradeAPI
 # apikey for alphaventage
 apikeyAlpha = "EBYN9X417QJPRW0H"
 # apikey for ameritrade
 apikeyAmeri = "96I1BNR5FXVTRTMNASI2Z7IPYG07MG9P"
+
 
 # Get the app form Flask package
 app = Flask(__name__)
@@ -77,58 +81,30 @@ def stockpage(wkn):
 
 @app.route("/stock/api/<symbol>", methods=["GET"])
 def apidata(symbol):
-    
-    stockData = Stock(symbol,{},{},{},{})
-    stockData.lastMonth = apiAmeriLastMonthData(symbol)
-    stockData.informations = apiAmeriQuotes(symbol)
-    stockData.today = apiAmeriToday(symbol)
-    stockData.last6Month = apiAmeriLast6MonthData(symbol)
+    activeAPI = AmeriTradeAPI()
+    stockData = Stock(symbol,{},{},{},{},{},{},{})
+    stockData.today = activeAPI.getToday(symbol)
+    stockData.lastMonth = activeAPI.getLastMonth(symbol)
+    stockData.informations = activeAPI.getInformations(symbol)
+    stockData.today = activeAPI.getToday(symbol)
+    stockData.last6Month = activeAPI.getLast6Month(symbol)
+    stockData.lastYear = activeAPI.getLastYear(symbol)
+    stockData.last5Years = AmeriTradeAPI.getLast5Years(symbol)
+    stockData.companyInfo = AlphavantageAPI.getCompanyOverview(symbol)
+    stockData.calc()
+   #stockData.calc()
     symbol = request.headers.get("symbol")
     # url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol="+symbol+"&apikey=" + apikey
     return json.dumps(stockData.__dict__)
 # Runs the app 
 
-def apiAmeriFundamental(symbol):
-    url = "https://api.tdameritrade.com/v1/instruments?apikey="+apikeyAmeri+"&symbol="+symbol+"&projection=fundamental"
-    r = requests.get(url)
-    data = r.json()
-    data = data[symbol]
-    return data
 
-def apiAmeriLastMonthData(symbol):
-    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=month&period=1&frequencyType=daily&frequency=1&endDate="+date+"&needExtendedHoursData=true"
-    r = requests.get(url)
-    data = r.json()
-    return data
 
-def apiAmeriLast6MonthData(symbol):
-    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=month&period=6&frequencyType=daily&frequency=1&endDate="+date+"&needExtendedHoursData=true"
-    r = requests.get(url)
-    data = r.json()
-    return data
 
-def apiAmeriToday(symbol):
-    today = int(round(time.time() * 1000))- 10000
-    yesterday = today - 86400000
-    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=day&period=1&frequencyType=minute&frequency=5&endDate="+str(today)+"&startDate="+str(yesterday)+"&needExtendedHoursData=false"
-    r = requests.get(url)
-    data = r.json()
-    try:
-        if data["candles"][-1]["open"] == 0:
-            data["candles"].pop()
-    except :
-        print("No candle")
-    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=day&period=1&frequencyType=minute&frequency=5&endDate="+str(today)+"&needExtendedHoursData=false"
-    r = requests.get(url)
-    data = r.json()
-    return data
 
-def apiAmeriQuotes(symbol):
-    url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/quotes?apikey=" + apikeyAmeri
-    r = requests.get(url)
-    data = r.json()
-    data = data[symbol]
-    return data
+
+
+
 
 
 if __name__ == "__main__":
