@@ -52,8 +52,10 @@ class Stock():
 
     def calc(self):
         self.yieldLast5Years = self.yieldForTwoDays(0,self.tradingdays*5)
+        print(".........................")
         for i in range(5):
             self.yieldForEachYear[i] = self.yieldForTwoDays(self.tradingdays*i,self.tradingdays*(i+1))
+        print(".........................")
         self.averageYield = self.calcAverageYield(self.yieldForEachYear)
         self.last5YearsDailyYields = self.calcDailyYields(0,5* self.tradingdays)
         self.dailyYieldAverageOneYear = self.calcAverageYield(self.last5YearsDailyYields[0:self.tradingdays])
@@ -88,7 +90,6 @@ class Stock():
  
         oldDate = len(self.last5YearsDaily["candles"]) - oldDate -1 
         newDate = len(self.last5YearsDaily["candles"]) - newDate -1 
-        print("NewDate =" + str(newDate))
         self.printCandleData(oldDate)
         self.printCandleData(newDate)
         return (self.last5YearsDaily["candles"][newDate]["close"] - self.last5YearsDaily["candles"][oldDate]["close"]) / self.last5YearsDaily["candles"][oldDate]["close"]

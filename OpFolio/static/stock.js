@@ -104,7 +104,7 @@ function useData(stockJson){
               },
         }
     };
-    /*
+    
     const chart = new Chart(
     document.getElementById('todayChart'),
     configToday
@@ -256,7 +256,7 @@ function useData(stockJson){
             data: stockLast5YearsData,
         }]
     }
-    */
+    
 }
 
 //Creats a html element of tpye "elementType" with the text "elementText" and binds it to "parentElement"
