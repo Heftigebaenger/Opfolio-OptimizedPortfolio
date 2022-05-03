@@ -1,2 +1,9 @@
 OpFolio/venv/pyvenv.cfg
 OpFolio/__pycache__
+OpFolio/.idea/inspectionProfiles/profiles_settings.xml
+OpFolio/.idea/misc.xml
+OpFolio/.idea/modules.xml
+OpFolio/.idea/OpFolio.iml
+OpFolio/.idea/vcs.xml
+OpFolio/.idea/workspace.xml
+OpFolio/.idea/*
