@@ -9,6 +9,21 @@ from time import time
 from datetime import datetime
 from typing import Final, final
 
+#Schreibe getDay methode
+def CalcCorrelationCoefficient(stockA,stockB):
+    years = 1
+    zaehler = 0
+    for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
+        zaehler = stockA.last5YearsDailyYields[n]*stockB.last5YearsDailyYields[n]
+    zaehler = zaehler * n 
+    summx = 0
+    for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
+        summx = summx + stockA.last5YearsDailyYields[n]
+    summy = 0
+    for n in range(stockA.last5YearsDailyYields[0:stockA.tradingdays]):
+        summy = summy + stockB.last5YearsDailyYields[n]
+    summx = summx * summy
+    zaehler = zaehler - summx
 # Stock Class to uniform Stockdata
 class Stock():
     tradingdays: Final = 253
@@ -60,7 +75,7 @@ class Stock():
         self.last5YearsDailyYields = self.calcDailyYields(0,5* self.tradingdays)
         self.dailyYieldAverageOneYear = self.calcAverageYield(self.last5YearsDailyYields[0:self.tradingdays])
         self.varianzOneYear = self.calcVarianz(0,self.tradingdays,self.dailyYieldAverageOneYear)
-        self.standartDevi = self.calcStandartDevi(self.varianzOneYear)
+        self.standartDeviOneYear = self.calcStandartDevi(self.varianzOneYear)
 
 
     def calcDailyYields(self,start,end):

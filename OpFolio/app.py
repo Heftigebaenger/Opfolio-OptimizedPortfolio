@@ -1,4 +1,5 @@
 from calendar import month
+from distutils.log import error
 from re import S
 from flask import Flask, redirect, url_for, render_template, jsonify
 import time, json
@@ -76,6 +77,9 @@ def index():
     stockPercentage = []
     portfolioVolume = 0
     for stock in myPortfoli.stockList:
+        if(len(activeAPI.getToday(stock[0])["candles"]) == 0):
+            error("No Candle Data ")
+        print(activeAPI.getToday(stock[0])["candles"])
         currentPrice = activeAPI.getToday(stock[0])["candles"][-1]["close"]
         print(currentPrice)
         portfolioVolume = portfolioVolume + currentPrice*stock[1]
@@ -84,23 +88,38 @@ def index():
     print(portfolioVolume)
     for stock in stockValue:
         stockPercentage.append(stock / portfolioVolume)
-    print(stockPercentage)
+    
 
     stockYield = []
+    stockData = []
+    k = 0
     for stock in myPortfoli.stockList:
-        stockData = Stock(stock[0],{},{},{},{},{},{},{},{})
-        stockData.today = activeAPI.getToday(stock[0])
-        stockData.lastMonth = activeAPI.getLastMonth(stock[0])
-        stockData.informations = activeAPI.getInformations(stock[0])
-        stockData.today = activeAPI.getToday(stock[0])
-        stockData.last6Month = activeAPI.getLast6Month(stock[0])
-        stockData.lastYear = activeAPI.getLastYear(stock[0])
-        stockData.last5Years = AmeriTradeAPI.getLast5Years(stock[0])
-        stockData.companyInfo = AlphavantageAPI.getCompanyOverview(stock[0])
-        stockData.last5YearsDaily = AmeriTradeAPI.getLast5YearsDaily(stock[0])
-        stockData.calc()
-        stockYield.append(stockData.yieldLast5Years)
-    print(stockYield)
+        stockData.append(Stock(stock[0],{},{},{},{},{},{},{},{}))
+        stockData[k].today = activeAPI.getToday(stock[0])
+        stockData[k].lastMonth = activeAPI.getLastMonth(stock[0])
+        stockData[k].informations = activeAPI.getInformations(stock[0])
+        stockData[k].today = activeAPI.getToday(stock[0])
+        stockData[k].last6Month = activeAPI.getLast6Month(stock[0])
+        stockData[k].lastYear = activeAPI.getLastYear(stock[0])
+        stockData[k].last5Years = AmeriTradeAPI.getLast5Years(stock[0])
+        stockData[k].companyInfo = AlphavantageAPI.getCompanyOverview(stock[0])
+        stockData[k].last5YearsDaily = AmeriTradeAPI.getLast5YearsDaily(stock[0])
+        stockData[k].calc()
+        stockYield.append(stockData[k].yieldForEachYear[0])
+        k = k+1
+    print("Aktien Anteile: "+ str(stockPercentage))
+    print("Aktien Rendite: "+ str(stockYield))
+    
+    portfolioYield = 0
+    portfolioStandart = 0
+    for i in range(len(stockPercentage)):
+        print(stockData[i])
+        print(stockData[i].standartDeviOneYear)
+        portfolioStandart = portfolioStandart + stockPercentage[i]*stockData[i].standartDeviOneYear
+        portfolioYield = portfolioYield + stockPercentage[i]*stockYield[i]
+    print("Portfolio Rendite: "+ str(portfolioYield))
+    print("Portfolio Standart: "+ str(portfolioStandart))
+        
     
     return render_template("index.html",stockList=stocks,depotValue=[depotwert,kaufwert,depotwertDiff,depotwertDiffPro,kaufwertDiff,kaufwertDiffPro])
 
