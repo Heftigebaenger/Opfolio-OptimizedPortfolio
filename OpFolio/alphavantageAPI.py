@@ -1,4 +1,3 @@
-import this
 from tradingAPI import TradingApi
 import time, json
 
