@@ -2,6 +2,7 @@
 
 
 
+from calendar import prmonth
 from logging import error, raiseExceptions
 from math import sqrt
 from statistics import variance
@@ -9,21 +10,7 @@ from time import time
 from datetime import datetime
 from typing import Final, final
 
-#Schreibe getDay methode
-def CalcCorrelationCoefficient(stockA,stockB):
-    years = 1
-    zaehler = 0
-    for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
-        zaehler = stockA.last5YearsDailyYields[n]*stockB.last5YearsDailyYields[n]
-    zaehler = zaehler * n 
-    summx = 0
-    for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
-        summx = summx + stockA.last5YearsDailyYields[n]
-    summy = 0
-    for n in range(stockA.last5YearsDailyYields[0:stockA.tradingdays]):
-        summy = summy + stockB.last5YearsDailyYields[n]
-    summx = summx * summy
-    zaehler = zaehler - summx
+
 # Stock Class to uniform Stockdata
 class Stock():
     tradingdays: Final = 253
@@ -142,3 +129,56 @@ class Stock():
         averageYield = averageYield / len(arrayOfYields)
         print("Length of Avrage Array: "+str(len(arrayOfYields)))
         return averageYield
+
+    def getCloseOfIndex(self,index):
+        index = len(self.last5YearsDaily["candles"]) - index -1
+        if(index < 0):
+            error("Index to high")
+        return self.last5YearsDaily["candles"][index]["close"]
+
+    #Schreibe getDay methode
+    @staticmethod
+    def calcCorrelationCoefficient(stockA,stockB):
+
+        years = 1
+        #Zaehler
+        zaehler = 0
+        summx = 0
+        summxx = 0
+        xy = 0
+        summy = 0
+        summyy = 0
+        
+        for n in range(stockA.tradingdays):
+            xy = xy + stockA.getCloseOfIndex(n)*stockB.getCloseOfIndex(n)
+
+        for n in range(stockA.tradingdays):
+            summx = summx + stockA.getCloseOfIndex(n)
+            summxx = summxx + stockA.getCloseOfIndex(n)**2
+
+        for n in range(stockA.tradingdays):
+            summy = summy + stockB.getCloseOfIndex(n)
+            summyy = summyy + stockB.getCloseOfIndex(n)**2
+        zaehler = stockA.tradingdays * xy - summx * summy
+        print("N ="+ str(stockA.tradingdays))
+        print("Sum xy =" + str(xy))
+        print("Sum x =" + str(summx))
+        print("Sum y =" + str(summy))
+        print("Zaehler =" + str(zaehler))
+
+        #Nenner
+
+        varianzx = stockA.tradingdays * summxx - summx**2   
+        varianzy = stockA.tradingdays * summyy - summy**2
+        varxy = varianzx* varianzy
+        nenner = sqrt(varxy)
+        
+
+        corr = zaehler/nenner
+        print("Varianzx =" + str(varianzx))
+        print("Varianzy = " + str(varianzy))
+        print("Varxy =" + str(varxy))
+        print("Nenner =" + str(nenner))
+        print(corr)
+        return corr
+

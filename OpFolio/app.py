@@ -1,4 +1,5 @@
 from calendar import month
+from cmath import sqrt
 from distutils.log import error
 from re import S
 from flask import Flask, redirect, url_for, render_template, jsonify
@@ -119,8 +120,11 @@ def index():
         portfolioYield = portfolioYield + stockPercentage[i]*stockYield[i]
     print("Portfolio Rendite: "+ str(portfolioYield))
     print("Portfolio Standart: "+ str(portfolioStandart))
-        
+    corr = Stock.calcCorrelationCoefficient(stockData[0],stockData[1])
     
+    risk = stockPercentage[0]**2 * stockData[0].standartDeviOneYear**2 + stockPercentage[1]**2 * stockData[1].standartDeviOneYear**2 + 2*stockPercentage[0]*stockPercentage[1]* stockData[0].standartDeviOneYear * stockData[1].standartDeviOneYear * corr
+    risk = sqrt(risk)
+    print(str(risk))
     return render_template("index.html",stockList=stocks,depotValue=[depotwert,kaufwert,depotwertDiff,depotwertDiffPro,kaufwertDiff,kaufwertDiffPro])
 
 # This function is called when open a stock url /stock/...
