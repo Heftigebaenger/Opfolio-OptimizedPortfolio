@@ -100,8 +100,8 @@ class Stock():
         date = self.last5YearsDaily["candles"][index]["datetime"]
         price = str(self.last5YearsDaily["candles"][index]["close"])
         date = datetime.fromtimestamp(date/1000);
-        print("Start:")
-        print("Price:"+price+"Date:"+ datetime.strftime(date,"%Y-%m-%d"));
+        #print("Start:")
+        #print("Price:"+price+"Date:"+ datetime.strftime(date,"%Y-%m-%d"));
 
 
     def calcVarianz(self,start,end,average):

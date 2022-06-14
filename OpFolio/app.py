@@ -94,6 +94,7 @@ def index():
     stockYield = []
     stockData = []
     k = 0
+    print(myPortfoli.stockList)
     for stock in myPortfoli.stockList:
         stockData.append(Stock(stock[0],{},{},{},{},{},{},{},{}))
         stockData[k].today = activeAPI.getToday(stock[0])
@@ -135,6 +136,53 @@ def stockpage(wkn):
     # stock = Array[Name,Quantity,Curr. Value,WKN,Type,Difference,Buy Value]
     return render_template("stock.html")
 
+@app.route("/risk")
+def riskpage():
+    return render_template("risk.html")
+
+@app.route("/risk/api/<symbolOne>/<symbolTwo>", methods=["GET"])
+def riskApiRequest(symbolOne,symbolTwo): 
+    riskStocks = [symbolOne,symbolTwo]
+    stockYield = []
+    stockData = []
+    k = 0
+    print(riskStocks)
+    for stock in riskStocks:
+        stockData.append(Stock(stock[0],{},{},{},{},{},{},{},{}))
+        stockData[k].today = activeAPI.getToday(stock)
+        stockData[k].lastMonth = activeAPI.getLastMonth(stock)
+        stockData[k].informations = activeAPI.getInformations(stock)
+        stockData[k].today = activeAPI.getToday(stock)
+        stockData[k].last6Month = activeAPI.getLast6Month(stock)
+        stockData[k].lastYear = activeAPI.getLastYear(stock)
+        stockData[k].last5Years = AmeriTradeAPI.getLast5Years(stock)
+        stockData[k].companyInfo = AlphavantageAPI.getCompanyOverview(stock)
+        stockData[k].last5YearsDaily = AmeriTradeAPI.getLast5YearsDaily(stock)
+        stockData[k].calc()
+        stockYield.append(stockData[k].yieldForEachYear[0])
+        k = k+1
+    print("Aktien Rendite: "+ str(stockYield))
+    
+
+
+    portfolioYield = 0
+    stockPercentage = [0,0]
+    corr = Stock.calcCorrelationCoefficient(stockData[0],stockData[1])
+    effCurveArray= []
+    for i in range(0,101):
+        stockPercentage[0] = (i)*0.01
+        stockPercentage[1] = (100-i)*0.01
+        portfolioYield = stockPercentage[0]*stockYield[0] + stockPercentage[1]*stockYield[1]
+        risk = stockPercentage[0]**2 * stockData[0].standartDeviOneYear**2 + stockPercentage[1]**2 * stockData[1].standartDeviOneYear**2 + 2*stockPercentage[0]*stockPercentage[1]* stockData[0].standartDeviOneYear * stockData[1].standartDeviOneYear * corr
+        print(risk)
+        risk = sqrt(risk)
+    
+        effCurveArray.append((portfolioYield,risk.real))
+    print(effCurveArray)
+
+    return json.dumps({"effCurveArray" :effCurveArray,"corr": corr})
+
+
 @app.route("/stock/api/<symbol>", methods=["GET"])
 def apidata(symbol):
     activeAPI = AmeriTradeAPI()
@@ -150,7 +198,6 @@ def apidata(symbol):
     stockData.last5YearsDaily = AmeriTradeAPI.getLast5YearsDaily(symbol)
     stockData.calc()
    #stockData.calc()
-    symbol = request.headers.get("symbol")
     # url = "https://www.alphavantage.co/query?function=OVERVIEW&symbol="+symbol+"&apikey=" + apikey
     return json.dumps(stockData.__dict__)
 # Runs the app 
