@@ -1,0 +1,26 @@
+{%extends "base.html"%}
+{%block head%}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>    
+    <script src="{{ url_for('static', filename='risk.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='risk.css') }}">
+
+{%endblock%}
+{%block content%}
+    <div id ="mainDiv">
+        <label for="stockOne">First Stock:</label><br>
+        <input type="text" id="stockOne" name="stockOne"><br>
+        <label for="stockTwo">Second Stock:</label><br>
+        <input type="text" id="stockTwo" name="stockTwo"><br>
+        <button onclick="compareStocks()">Compare</button>
+    </div>
+    <div id="container" max-width="400px"></div>
+
+
+
+
+    </div>
+{%endblock%}

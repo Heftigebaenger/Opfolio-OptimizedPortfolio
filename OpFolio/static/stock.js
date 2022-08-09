@@ -7,7 +7,7 @@ var month = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov",
 
 
 //var stockData = response.data;
-fetch("/stock/api/"+id,{headers: {'symbol': id}}).then(response => response.json()).then(data => useData(data)) 
+fetch("/stock/api/"+id).then(response => response.json()).then(data => useData(data)) 
 
 
 function useData(stockJson){

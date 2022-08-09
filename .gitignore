@@ -7,3 +7,7 @@ OpFolio/.idea/OpFolio.iml
 OpFolio/.idea/vcs.xml
 OpFolio/.idea/workspace.xml
 OpFolio/.idea/*
+sqlite-tools-win32-x86-3380500.zip
+sqlite-tools-win32-x86-3380500/sqldiff.exe
+sqlite-tools-win32-x86-3380500/sqlite3.exe
+sqlite-tools-win32-x86-3380500/sqlite3_analyzer.exe
