@@ -9,11 +9,12 @@ from statistics import variance
 from time import time
 from datetime import datetime
 from typing import Final, final
+import numpy as np
 
 
 # Stock Class to uniform Stockdata
 class Stock():
-    tradingdays: Final = 253
+    tradingdays: Final = 250
     #Basic Information
     symbol = ""
     informations = {}
@@ -77,6 +78,7 @@ class Stock():
      
     # Calculates the yield for two given Days  
     # 0 = Today,  365 = One Year ago
+    # Yields calculated with ln(e) to include compound interest
     def yieldForTwoDays(self,dateOne, dateTwo):
         oldDate = 0
         newDate = 0
@@ -94,12 +96,15 @@ class Stock():
         newDate = len(self.last5YearsDaily["candles"]) - newDate -1 
         self.printCandleData(oldDate)
         self.printCandleData(newDate)
-        return (self.last5YearsDaily["candles"][newDate]["close"] - self.last5YearsDaily["candles"][oldDate]["close"]) / self.last5YearsDaily["candles"][oldDate]["close"]
+        print(np.log(self.last5YearsDaily["candles"][newDate]["close"] / self.last5YearsDaily["candles"][oldDate]["close"]))
+        return np.log(self.last5YearsDaily["candles"][newDate]["close"] / self.last5YearsDaily["candles"][oldDate]["close"])
+        #return (self.last5YearsDaily["candles"][newDate]["close"] - self.last5YearsDaily["candles"][oldDate]["close"]) / self.last5YearsDaily["candles"][oldDate]["close"]
+
 
     def printCandleData(self,index):
         date = self.last5YearsDaily["candles"][index]["datetime"]
         price = str(self.last5YearsDaily["candles"][index]["close"])
-        date = datetime.fromtimestamp(date/1000);
+        date = datetime.fromtimestamp(date/1000)
         #print("Start:")
         #print("Price:"+price+"Date:"+ datetime.strftime(date,"%Y-%m-%d"));
 
