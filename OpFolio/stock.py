@@ -10,20 +10,8 @@ from datetime import datetime
 from typing import Final, final
 
 #Schreibe getDay methode
-def CalcCorrelationCoefficient(stockA,stockB):
-    years = 1
-    zaehler = 0
-    for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
-        zaehler = stockA.last5YearsDailyYields[n]*stockB.last5YearsDailyYields[n]
-    zaehler = zaehler * n 
-    summx = 0
-    for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
-        summx = summx + stockA.last5YearsDailyYields[n]
-    summy = 0
-    for n in range(stockA.last5YearsDailyYields[0:stockA.tradingdays]):
-        summy = summy + stockB.last5YearsDailyYields[n]
-    summx = summx * summy
-    zaehler = zaehler - summx
+
+
 # Stock Class to uniform Stockdata
 class Stock():
     tradingdays: Final = 253
@@ -112,7 +100,7 @@ class Stock():
     def printCandleData(self,index):
         date = self.last5YearsDaily["candles"][index]["datetime"]
         price = str(self.last5YearsDaily["candles"][index]["close"])
-        date = datetime.fromtimestamp(date/1000);
+        date = datetime.fromtimestamp(date/1000)
         print("Start:")
         print("Price:"+price+"Date:"+ datetime.strftime(date,"%Y-%m-%d"));
 
@@ -142,3 +130,41 @@ class Stock():
         averageYield = averageYield / len(arrayOfYields)
         print("Length of Avrage Array: "+str(len(arrayOfYields)))
         return averageYield
+
+    @staticmethod
+    def calcCorrelationCoefficient(stockA,stockB):
+        years = 1
+        zaehler = 0
+        for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
+            zaehler = stockA.last5YearsDailyYields[n]*stockB.last5YearsDailyYields[n]
+        zaehler = zaehler * n 
+        summx = 0
+        for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
+            summx = summx + stockA.last5YearsDailyYields[n]
+        summy = 0
+        for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
+            summy = summy + stockB.last5YearsDailyYields[n]
+        summx = summx * summy
+        zaehler = zaehler - summx
+
+        nennerPart1 = 0
+        summxSquare = 0
+        for n in range(len(stockA.last5YearsDailyYields[0:stockA.tradingdays])):
+            summxSquare = summxSquare + stockA.last5YearsDailyYields[n]**2
+        nennerPart1 = n * summxSquare - summx**2
+    
+        summySquare = 0
+        for n in range(len(stockB.last5YearsDailyYields[0:stockB.tradingdays])):
+            summySquare = summySquare + stockB.last5YearsDailyYields[n]**2
+        nennerPart2 = n * summySquare - summy**2
+
+        insideRoot = nennerPart1 * nennerPart2
+        nenner = sqrt(insideRoot)
+        correCoe = zaehler/nenner
+        print("Summy: " +str (summy))
+        print("Summx: " +str (summx))
+        print("Zaehler: "+str(zaehler))
+        print("Nenner: "+str(nenner))
+        print("CorreCoe: " + str(correCoe))
+
+

@@ -18,7 +18,7 @@ activeAPI = AmeriTradeAPI()
 # Get the app form Flask package
 app = Flask(__name__)
 date = str(int(round(time.time() * 1000)))
-print(date);
+print(date)
 # Globalvariable for your Depot
 # This needs to be replaced by a SQL database
 depotwert = 0
@@ -116,7 +116,8 @@ def index():
         print(stockData[i])
         print(stockData[i].standartDeviOneYear)
         portfolioStandart = portfolioStandart + stockPercentage[i]*stockData[i].standartDeviOneYear
-        portfolioYield = portfolioYield + stockPercentage[i]*stockYield[i]
+        portfolioYield = portfolioYield**2 + (stockPercentage[i]*stockYield[i])**2
+    Stock.calcCorrelationCoefficient(stockData[0],stockData[1])
     print("Portfolio Rendite: "+ str(portfolioYield))
     print("Portfolio Standart: "+ str(portfolioStandart))
         
