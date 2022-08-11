@@ -81,7 +81,7 @@ def index():
         if(len(activeAPI.getToday(stock[0])["candles"]) == 0):
             error("No Candle Data ")
         print(activeAPI.getToday(stock[0])["candles"])
-        currentPrice = activeAPI.getToday(stock[0])["candles"][-1]["close"]
+        currentPrice = activeAPI.getInformations(stock[0])["lastPrice"]
         print(currentPrice)
         portfolioVolume = portfolioVolume + currentPrice*stock[1]
         stockValue.append(currentPrice*stock[1])
