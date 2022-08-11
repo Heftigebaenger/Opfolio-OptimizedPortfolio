@@ -17,6 +17,38 @@ import numpy as np
 
 # Stock Class to uniform Stockdata
 class Stock():
+    """Cointains all information for a single stock as well as calculation with the stock informations
+
+    Attributes: 
+        symbol (str): Unique symbol to identify stock
+        informations (dictionary): Containts information about the stock
+        conpanyInfo (dictionary): Contains information about the stock company
+
+        today (dictionary): Contains candles for every 5 minutes for today
+        lastMonth (dictionary): Contains candels for each day for the last month
+        last6Month (dictionary): Contains candles for each day for the last six month
+        lastYear (dictionary): Contains candles for each week for the last year
+        last5Years (dictionary): Contains candles for each month for the last five years
+        last5YearsDaily (dictionary): Contains candles for each day for the last five years
+
+    Methods:
+        calc()  
+            Calculates yields, varianz and deviation for the stock
+        
+        calcDailyYields(start,end)
+            Returns an array with all daily yields between the start date and end date. 
+            Start and end are based on the last5YearsDaily array
+
+        yieldForTwoDays(dateOne,dateTwo)
+            Returns the logarithic yield between two given dates
+
+        printCandleData(index):
+            prints the price and date for one candle data. 
+            The given index is used to find the data in the last5YearsDaily array.
+
+        calcVarianz(start,end,average)
+    """
+
     tradingdays: Final = 250
     #Basic Information
     symbol = ""
@@ -108,7 +140,6 @@ class Stock():
         date = self.last5YearsDaily["candles"][index]["datetime"]
         price = str(self.last5YearsDaily["candles"][index]["close"])
         date = datetime.fromtimestamp(date/1000)
-        print("Start:")
         print("Price:"+price+"Date:"+ datetime.strftime(date,"%Y-%m-%d"));
 
 
