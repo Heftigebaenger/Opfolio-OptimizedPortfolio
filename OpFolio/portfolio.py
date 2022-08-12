@@ -1,5 +1,6 @@
 from logging import error
-
+from yfinanceAPI import YahooAPI
+import numpy as np
 
 class Portfolio():
     stockList = []
@@ -34,4 +35,21 @@ class Portfolio():
             if(stock[0][0] == symbol):
                 break
         f = open("Portfolios/portfolio"+str(self.id)+".txt","r") 
+    
+    # Die Varianz-Kovarianz Matrix stellt in der diagonale die Varianz der Einzelwerte da
+    # In den anderen Feldern stehen die Kovarianzen der jeweiligen Werte (WP1, Wp2), (WP1, WP3) etc
+    # Mit Hilfe dieser Methode berechnen wir Opportunity Sets mit n > 2 Anlagen  
+
+    # ToDo. StockList vom Portfolio anpassen für diese Methode
+    def VarKovMatrix():
+        stocks = ["MSFT","AAPL","BNTX"]
+        data_stocks = []
+        for symbol in stocks:
+            data_stocks.append(YahooAPI.getOneYearYields(symbol))
+        npArray = np.array(data_stocks)
+        KovMatrix = np.cov(npArray, bias=True)
+        print(KovMatrix)
+
+    VarKovMatrix()
+    
         
