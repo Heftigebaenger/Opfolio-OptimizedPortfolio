@@ -1,6 +1,8 @@
 from logging import error
 from yfinanceAPI import YahooAPI
 import numpy as np
+import pandas as pd
+
 
 class Portfolio():
     stockList = []
@@ -43,13 +45,19 @@ class Portfolio():
     # ToDo. StockList vom Portfolio anpassen für diese Methode
     def VarKovMatrix():
         stocks = ["MSFT","AAPL","BNTX"]
-        data_stocks = []
+        df_stockYields = pd.DataFrame()
         for symbol in stocks:
-            data_stocks.append(YahooAPI.getOneYearYields(symbol))
-        npArray = np.array(data_stocks)
-        KovMatrix = np.cov(npArray, bias=True)
+            df_stockYields[symbol] = YahooAPI.getOneYearYields(symbol)
+        print(df_stockYields)
+        CorMatrix = df_stockYields.corr()
+        KovMatrix = df_stockYields.cov()
+        print("Korrelations Matrix")
+        print(CorMatrix)
+        print("Kovarianz Matrix")
         print(KovMatrix)
+
 
     VarKovMatrix()
     
+
         
