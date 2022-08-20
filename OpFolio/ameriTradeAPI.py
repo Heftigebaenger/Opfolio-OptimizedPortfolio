@@ -13,7 +13,7 @@ class AmeriTradeAPI(TradingApi):
         url = "https://api.tdameritrade.com/v1/marketdata/"+symbol+"/pricehistory?apikey="+apikeyAmeri+"&periodType=day&period=1&frequencyType=minute&frequency=5&endDate="+str(today)+"&startDate="+str(yesterday)+"&needExtendedHoursData=false"
         data = TradingApi.apiRequest(url)
         try:
-            if data["candles"][-1]["open"] == 0:
+            if data["candles"][-1]["close"] == 0:
                 data["candles"].pop()
         except :
             print("No candle")
