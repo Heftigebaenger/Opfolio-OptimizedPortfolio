@@ -1,6 +1,11 @@
 from logging import error
+from operator import truediv
 from yfinanceAPI import YahooAPI
 import numpy as np
+import pandas as pd
+from math import sqrt
+from stock import Stock
+import random
 
 class Portfolio():
     stockList = []
@@ -43,13 +48,35 @@ class Portfolio():
     # ToDo. StockList vom Portfolio anpassen für diese Methode
     def VarKovMatrix():
         stocks = ["MSFT","AAPL","BNTX"]
-        data_stocks = []
+        data_stocks = pd.DataFrame()
         for symbol in stocks:
-            data_stocks.append(YahooAPI.getOneYearYields(symbol))
-        npArray = np.array(data_stocks)
-        KovMatrix = np.cov(npArray, bias=True)
+            data_stocks[symbol]=YahooAPI.getOneYearYields(symbol, lg=True)
+        KovMatrix = data_stocks.cov()
+        KovMatrix = KovMatrix.multiply(Stock.tradingdays)
         print(KovMatrix)
 
-    VarKovMatrix()
+    # ToDo: Ist aktuell noch nichts berechnet 
+    def CorrMatrix():
+        stocks = ["MSFT","AAPL","BNTX"]
+        data_stocks = pd.DataFrame()
+        for symbol in stocks:
+            data_stocks[symbol]=YahooAPI.getOneYearYields(symbol, lg=True)
+        KovMatrix = data_stocks.corr()
+        print(KovMatrix)
+
+
+    def multiPortfolio():
+        stocks = ["MSFT","AAPL","BNTX","Test"]
+        rndm_nr = np.empty()
+        port_shares = np.empty(0)
+        i = 0
+        while i < len(stocks):
+            np.append(rndm_nr, random.random())
+            i += 1
+        print(rndm_nr)
+
+
+
+    multiPortfolio()
     
         
