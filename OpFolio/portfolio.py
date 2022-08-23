@@ -8,6 +8,7 @@ import pandas as pd
 from math import sqrt
 from stock import Stock
 import random
+import matplotlib.pyplot as plt
 
 class Portfolio():
     stockList = []
@@ -48,14 +49,14 @@ class Portfolio():
     # Mit Hilfe dieser Methode berechnen wir Opportunity Sets mit n > 2 Anlagen  
 
     # ToDo. StockList vom Portfolio anpassen für diese Methode
-    def VarKovMatrix():
-        stocks = ["MSFT","AAPL","BNTX"]
+    def VarKovMatrix(self, stocks):
         data_stocks = pd.DataFrame()
         for symbol in stocks:
             data_stocks[symbol]=YahooAPI.getOneYearYields(symbol, lg=True)
         KovMatrix = data_stocks.cov()
         KovMatrix = KovMatrix.multiply(Stock.tradingdays)
         print(KovMatrix)
+        return KovMatrix
 
     # ToDo: Ist aktuell noch nichts berechnet 
     def CorrMatrix(self,stocks):
@@ -83,28 +84,34 @@ class Portfolio():
         sumRandomMatrix = np.sum(randomMatrix, axis=1)
         divisionMatix = np.tile(sumRandomMatrix, (len(stocks),1))
         anteilMatrix = randomMatrix / divisionMatix.T
-        print(randomMatrix)
-        print(sumRandomMatrix.T)
-        print(divisionMatix.T)
-        print("Final Matrix")
-        print(anteilMatrix)
-        print("Sum Final Matrix")
 
         #yieldsBigMatrix = np.tile(yields, (500,1))
         #print("Yield Matrix")
         #print(yieldsBigMatrix.T)
         portfolioRenditeVector = np.dot(anteilMatrix,yields)
         
-        corrMatrix = np.array(self.CorrMatrix(stocks))
-        print(corrMatrix)
+        varkovMatrix = np.array(self.VarKovMatrix(stocks))
         
-        riskMatrix = np.apply_along_axis(self.multiPortfolioHelper,1,corrMatrix,anteilMatrix)
-        print(riskMatrix)
-        #print(portfolioRenditeVector)
+        riskMatrix = np.apply_along_axis(self.multiPortfolioHelper,1,varkovMatrix,anteilMatrix).T
+        riskMatrix = np.matmul(riskMatrix, anteilMatrix.T)
+        riskVector = np.diagonal(riskMatrix)
+        riskVector = np.sqrt(riskVector)
+        print("riskVector")
+        print(riskVector)
+        print(portfolioRenditeVector)
+        f = open("risk.txt","w")
+        for i in riskVector:
+            f.write(str(i)+"\n") 
+        p = open("yield.txt","w")
+        for i in portfolioRenditeVector: 
+            p.write(str(i)+"\n")
+        f.close()
+        p.close()
 
-    def multiPortfolioHelper(self,corrMatrixVector,anteilMatrix):
-        print(corrMatrixVector)
-        return np.dot(anteilMatrix,corrMatrixVector)
+
+    def multiPortfolioHelper(self,varkovMatrixVector,anteilMatrix):
+        print(varkovMatrixVector)
+        return np.dot(anteilMatrix,varkovMatrixVector)
 
 
 
