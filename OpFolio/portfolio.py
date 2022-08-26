@@ -1,3 +1,4 @@
+from ast import In
 from audioop import mul
 from distutils.spawn import find_executable
 from logging import error
@@ -69,8 +70,8 @@ class Portfolio():
 
 
     def multiPortfolio(self):
-        stocks = ["MSFT","AAPL","BNTX","SAP"]
-        yields = [0.2,0.6,0.3,0.4]
+        stocks = ["KO","BNTX","MSFT","DB"]
+        yields = [0.25,0.3,0.4,-0.13]
         #rndm_nr = np.empty()
         #port_shares = np.empty(0)
         #i = 0
@@ -112,6 +113,32 @@ class Portfolio():
     def multiPortfolioHelper(self,varkovMatrixVector,anteilMatrix):
         print(varkovMatrixVector)
         return np.dot(anteilMatrix,varkovMatrixVector)
+
+
+    #Relative Häufigkeiten Einzelwerte
+    def distributionYields(self):
+        stocks = ["SAP"]
+        Yields = [0.2]
+        SigmaInterval = 3.25
+        AnzahlIntervalle = 14
+        Left_Range = 0
+        Right_Range = 0
+        i = 1
+        for stocks in stocks:
+            oneYearYields = np.array(YahooAPI.getOneYearYields(stocks, lg=True))
+            oneYearStanDevi = np.std(oneYearYields) * sqrt(Stock.tradingdays)
+            Left_Range = Yields[0] - SigmaInterval * oneYearStanDevi
+            Right_Range = Yields[0] + SigmaInterval * oneYearStanDevi
+            WPArray = np.empty([Left_Range])
+            while i <= AnzahlIntervalle:
+                InterSeize = Left_Range + i * (Right_Range - Left_Range) / AnzahlIntervalle
+                np.append(WPArray, InterSeize)
+                print(WPArray)
+                i+= 1
+
+
+
+
 
 
 
