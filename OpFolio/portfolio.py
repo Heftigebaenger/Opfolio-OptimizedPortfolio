@@ -119,6 +119,7 @@ class Portfolio():
     def distributionYields(self):
         stocks = ["SAP"]
         Yields = [0.2]
+        WPAll = np.array([[]])
         SigmaInterval = 3.25
         AnzahlIntervalle = 14
         Left_Range = 0
@@ -129,12 +130,13 @@ class Portfolio():
             oneYearStanDevi = np.std(oneYearYields) * sqrt(Stock.tradingdays)
             Left_Range = Yields[0] - SigmaInterval * oneYearStanDevi
             Right_Range = Yields[0] + SigmaInterval * oneYearStanDevi
-            WPArray = np.array([Left_Range])
+            WPTemp = np.array([Left_Range])
             while i <= AnzahlIntervalle:
                 InterSeize = Left_Range + i * (Right_Range - Left_Range) / AnzahlIntervalle
-                np.append(WPArray, InterSeize)
-                print(WPArray)
+                WPTemp = np.append(WPTemp, InterSeize)
                 i+= 1
+            WPAll = np.append(WPAll, WPTemp, axis=0)
+        print(WPTemp)
 
 
 
