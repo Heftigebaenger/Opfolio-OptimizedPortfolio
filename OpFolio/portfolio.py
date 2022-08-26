@@ -1,4 +1,4 @@
-from ast import In
+
 from audioop import mul
 from distutils.spawn import find_executable
 from logging import error
@@ -129,7 +129,7 @@ class Portfolio():
             oneYearStanDevi = np.std(oneYearYields) * sqrt(Stock.tradingdays)
             Left_Range = Yields[0] - SigmaInterval * oneYearStanDevi
             Right_Range = Yields[0] + SigmaInterval * oneYearStanDevi
-            WPArray = np.empty([Left_Range])
+            WPArray = np.array([Left_Range])
             while i <= AnzahlIntervalle:
                 InterSeize = Left_Range + i * (Right_Range - Left_Range) / AnzahlIntervalle
                 np.append(WPArray, InterSeize)
@@ -143,7 +143,7 @@ class Portfolio():
 
 
 portfolioOne = Portfolio(1)
-portfolioOne.multiPortfolio()
+portfolioOne.distributionYields()
 
   
 
