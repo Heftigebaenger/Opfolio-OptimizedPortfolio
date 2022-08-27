@@ -3,8 +3,6 @@ import numpy as np
 import seaborn as sns
 import yfinance as yf
 import matplotlib.pyplot as plt
-from math import sqrt
-from stock import Stock
 #%matplotlib inline
 
 class YahooAPI():
@@ -29,7 +27,6 @@ class YahooAPI():
              for i in range(len(df_close)-1):
                     yield_column.append((df["Close"][i+1] / df["Close"][i] -1 ))
         df_close["Yields"] = yield_column
-        print(df_close)
         return df_close["Yields"]
        
 

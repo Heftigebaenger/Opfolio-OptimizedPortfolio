@@ -1,8 +1,5 @@
 
-from audioop import mul
-from distutils.spawn import find_executable
 from logging import error
-from operator import truediv
 from yfinanceAPI import YahooAPI
 import numpy as np
 import pandas as pd
@@ -10,6 +7,9 @@ from math import sqrt
 from stock import Stock
 import random
 import matplotlib.pyplot as plt
+from scipy.stats import kstest
+from scipy.stats import lognorm
+
 
 class Portfolio():
     stockList = []
@@ -117,16 +117,18 @@ class Portfolio():
 
     #Relative Häufigkeiten Einzelwerte
     def distributionYields(self):
-        stocks = ["SAP"]
+        stocks = ["SAP","BNTX"]
         Yields = [0.2]
-        WPAll = np.array([[]])
+        WPIntervallAll = []
         SigmaInterval = 3.25
         AnzahlIntervalle = 14
         Left_Range = 0
         Right_Range = 0
-        i = 1
-        for stocks in stocks:
-            oneYearYields = np.array(YahooAPI.getOneYearYields(stocks, lg=True))
+        #For Schleife zum erzeugen der Intervalle (X-Achse Gaußverteilung)
+        for stock in stocks:
+            i = 0
+            oneYearYields = np.array(YahooAPI.getOneYearYields(stock, lg=False))
+            result = kstest(oneYearYields, "norm")
             oneYearStanDevi = np.std(oneYearYields) * sqrt(Stock.tradingdays)
             Left_Range = Yields[0] - SigmaInterval * oneYearStanDevi
             Right_Range = Yields[0] + SigmaInterval * oneYearStanDevi
@@ -135,11 +137,12 @@ class Portfolio():
                 InterSeize = Left_Range + i * (Right_Range - Left_Range) / AnzahlIntervalle
                 WPTemp = np.append(WPTemp, InterSeize)
                 i+= 1
-            WPAll = np.append(WPAll, WPTemp, axis=0)
-        print(WPTemp)
-
-
-
+            WPIntervallAll.append(WPTemp)
+            print(result)
+       
+    
+        #For Schleife zum erstellen der relativen Häufigkeiten (Yields)
+        #for stock in stocks:
 
 
 
