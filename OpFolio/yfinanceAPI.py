@@ -32,4 +32,4 @@ class YahooAPI():
 
         
     
-    getOneYearClose("AAPL")
+    getOneYearYields("AAPL")

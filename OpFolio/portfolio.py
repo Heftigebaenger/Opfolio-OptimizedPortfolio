@@ -1,5 +1,6 @@
-
+#%%
 from logging import error
+from pickle import TRUE
 from yfinanceAPI import YahooAPI
 import numpy as np
 import pandas as pd
@@ -116,6 +117,7 @@ class Portfolio():
 
 
     #Relative Häufigkeiten Einzelwerte
+    
     def distributionYields(self):
         stocks = ["SAP","BNTX"]
         Yields = [0.2]
@@ -124,21 +126,20 @@ class Portfolio():
         AnzahlIntervalle = 14
         Left_Range = 0
         Right_Range = 0
+        stockTest = 0
+
+        fig, axes = plt.subplots(1, 2)
         #For Schleife zum erzeugen der Intervalle (X-Achse Gaußverteilung)
-        for stock in stocks:
-            i = 0
-            oneYearYields = np.array(YahooAPI.getOneYearYields(stock, lg=False))
-            result = kstest(oneYearYields, "norm")
-            oneYearStanDevi = np.std(oneYearYields) * sqrt(Stock.tradingdays)
-            Left_Range = Yields[0] - SigmaInterval * oneYearStanDevi
-            Right_Range = Yields[0] + SigmaInterval * oneYearStanDevi
-            WPTemp = np.array([Left_Range])
-            while i <= AnzahlIntervalle:
-                InterSeize = Left_Range + i * (Right_Range - Left_Range) / AnzahlIntervalle
-                WPTemp = np.append(WPTemp, InterSeize)
-                i+= 1
-            WPIntervallAll.append(WPTemp)
-            print(result)
+        for i in range(len(stocks)):
+  
+            oneYearYields = YahooAPI.getOneYearYields(stocks[i], lg=False)
+            print(oneYearYields)
+            oneYearYields.hist(ax = axes[i],legend=True,bins = 20);
+
+
+
+
+           
        
     
         #For Schleife zum erstellen der relativen Häufigkeiten (Yields)
@@ -150,13 +151,7 @@ class Portfolio():
 portfolioOne = Portfolio(1)
 portfolioOne.distributionYields()
 
-  
 
 
 
-
-
-
-
-    
-        
+# %%
