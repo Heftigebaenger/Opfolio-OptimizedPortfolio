@@ -8,7 +8,7 @@ import pandas as pd
 from math import sqrt
 from stock import Stock
 import random
-
+import matplotlib.pyplot as plt
 class Portfolio():
     stockList = []
     id = 0
@@ -98,9 +98,12 @@ class Portfolio():
         corrMatrix = np.array(self.CorrMatrix(stocks))
         print(corrMatrix)
         
-        riskMatrix = np.apply_along_axis(self.multiPortfolioHelper,1,corrMatrix,anteilMatrix)
+        riskMatrix = np.apply_along_axis(self.multiPortfolioHelper,1,corrMatrix,anteilMatrix).T
         print(riskMatrix)
-        #print(portfolioRenditeVector)
+        riskMatrix = riskMatrix * anteilMatrix.T
+        riskVector = np
+
+        print(portfolioRenditeVector)
 
     def multiPortfolioHelper(self,corrMatrixVector,anteilMatrix):
         print(corrMatrixVector)
