@@ -141,13 +141,16 @@ def stockpage(wkn):
 def riskpage():
     return render_template("risk.html")
 
+
 @app.route("/risk/api/<symbolOne>/<symbolTwo>", methods=["GET"])
 def riskApiRequest(symbolOne,symbolTwo): 
+    # This function calculates the risk between two stocks given by the symbols
     riskStocks = [symbolOne,symbolTwo]
     stockYield = []
     stockData = []
     k = 0
     print(riskStocks)
+    # Get the data for the stocks
     for stock in riskStocks:
         stockData.append(Stock(stock[0],{},{},{},{},{},{},{},{}))
         stockData[k].today = activeAPI.getToday(stock)
@@ -163,13 +166,13 @@ def riskApiRequest(symbolOne,symbolTwo):
         stockYield.append(stockData[k].yieldForEachYear[0])
         k = k+1
     print("Aktien Rendite: "+ str(stockYield))
-    
 
 
     portfolioYield = 0
     stockPercentage = [0,0]
     corr = Stock.calcCorrelationCoefficient(stockData[0],stockData[1])
     effCurveArray= []
+    # Calculate the risk for every possible combination of the stocks
     for i in range(0,101):
         stockPercentage[0] = (i)*0.01
         stockPercentage[1] = (100-i)*0.01

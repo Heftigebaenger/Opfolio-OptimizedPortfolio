@@ -1,7 +1,6 @@
-from audioop import mul
-from distutils.spawn import find_executable
+#%%
 from logging import error
-from operator import truediv
+from pickle import TRUE
 from yfinanceAPI import YahooAPI
 import numpy as np
 import pandas as pd
@@ -9,6 +8,10 @@ from math import sqrt
 from stock import Stock
 import random
 import matplotlib.pyplot as plt
+from scipy.stats import kstest
+from scipy.stats import lognorm
+
+
 class Portfolio():
     stockList = []
     id = 0
@@ -48,14 +51,14 @@ class Portfolio():
     # Mit Hilfe dieser Methode berechnen wir Opportunity Sets mit n > 2 Anlagen  
 
     # ToDo. StockList vom Portfolio anpassen für diese Methode
-    def VarKovMatrix():
-        stocks = ["MSFT","AAPL","BNTX"]
+    def VarKovMatrix(self, stocks):
         data_stocks = pd.DataFrame()
         for symbol in stocks:
             data_stocks[symbol]=YahooAPI.getOneYearYields(symbol, lg=True)
         KovMatrix = data_stocks.cov()
         KovMatrix = KovMatrix.multiply(Stock.tradingdays)
         print(KovMatrix)
+        return KovMatrix
 
     # ToDo: Ist aktuell noch nichts berechnet 
     def CorrMatrix(self,stocks):
@@ -68,8 +71,8 @@ class Portfolio():
 
 
     def multiPortfolio(self):
-        stocks = ["MSFT","AAPL","BNTX","SAP"]
-        yields = [0.2,0.6,0.3,0.4]
+        stocks = ["KO","BNTX","MSFT","DB"]
+        yields = [0.25,0.3,0.4,-0.13]
         #rndm_nr = np.empty()
         #port_shares = np.empty(0)
         #i = 0
@@ -83,44 +86,72 @@ class Portfolio():
         sumRandomMatrix = np.sum(randomMatrix, axis=1)
         divisionMatix = np.tile(sumRandomMatrix, (len(stocks),1))
         anteilMatrix = randomMatrix / divisionMatix.T
-        print(randomMatrix)
-        print(sumRandomMatrix.T)
-        print(divisionMatix.T)
-        print("Final Matrix")
-        print(anteilMatrix)
-        print("Sum Final Matrix")
 
         #yieldsBigMatrix = np.tile(yields, (500,1))
         #print("Yield Matrix")
         #print(yieldsBigMatrix.T)
         portfolioRenditeVector = np.dot(anteilMatrix,yields)
         
-        corrMatrix = np.array(self.CorrMatrix(stocks))
-        print(corrMatrix)
+        varkovMatrix = np.array(self.VarKovMatrix(stocks))
         
-        riskMatrix = np.apply_along_axis(self.multiPortfolioHelper,1,corrMatrix,anteilMatrix).T
-        print(riskMatrix)
-        riskMatrix = riskMatrix * anteilMatrix.T
-        riskVector = np
-
+        riskMatrix = np.apply_along_axis(self.multiPortfolioHelper,1,varkovMatrix,anteilMatrix).T
+        riskMatrix = np.matmul(riskMatrix, anteilMatrix.T)
+        riskVector = np.diagonal(riskMatrix)
+        riskVector = np.sqrt(riskVector)
+        print("riskVector")
+        print(riskVector)
         print(portfolioRenditeVector)
+        f = open("risk.txt","w")
+        for i in riskVector:
+            f.write(str(i)+"\n") 
+        p = open("yield.txt","w")
+        for i in portfolioRenditeVector: 
+            p.write(str(i)+"\n")
+        f.close()
+        p.close()
 
-    def multiPortfolioHelper(self,corrMatrixVector,anteilMatrix):
-        print(corrMatrixVector)
-        return np.dot(anteilMatrix,corrMatrixVector)
+
+    def multiPortfolioHelper(self,varkovMatrixVector,anteilMatrix):
+        print(varkovMatrixVector)
+        return np.dot(anteilMatrix,varkovMatrixVector)
+
+
+    #Relative Häufigkeiten Einzelwerte
+    
+    def distributionYields(self):
+        stocks = ["SAP","BNTX"]
+        Yields = [0.2]
+        WPIntervallAll = []
+        SigmaInterval = 3.25
+        AnzahlIntervalle = 14
+        Left_Range = 0
+        Right_Range = 0
+        stockTest = 0
+
+        fig, axes = plt.subplots(1, 2)
+        #For Schleife zum erzeugen der Intervalle (X-Achse Gaußverteilung)
+        for i in range(len(stocks)):
+  
+            oneYearYields = YahooAPI.getOneYearYields(stocks[i], lg=False)
+            print(oneYearYields)
+            oneYearYields.hist(ax = axes[i],legend=True,bins = 20);
+
+
+
+
+           
+       
+    
+        #For Schleife zum erstellen der relativen Häufigkeiten (Yields)
+        #for stock in stocks:
+
 
 
 
 portfolioOne = Portfolio(1)
-portfolioOne.multiPortfolio()
-
-  
+portfolioOne.distributionYields()
 
 
 
 
-
-
-
-    
-        
+# %%
