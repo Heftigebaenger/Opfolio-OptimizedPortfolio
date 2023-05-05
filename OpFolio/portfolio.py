@@ -10,6 +10,7 @@ import random
 import matplotlib.pyplot as plt
 from scipy.stats import kstest
 from scipy.stats import lognorm
+from scipy.optimize import minimize
 
 
 class Portfolio():
@@ -57,7 +58,8 @@ class Portfolio():
             data_stocks[symbol]=YahooAPI.getOneYearYields(symbol, lg=True)
         KovMatrix = data_stocks.cov()
         KovMatrix = KovMatrix.multiply(Stock.tradingdays)
-        print(KovMatrix)
+        #print("KovMatrix")
+        #print(KovMatrix)
         return KovMatrix
 
     # ToDo: Ist aktuell noch nichts berechnet 
@@ -66,27 +68,34 @@ class Portfolio():
         for symbol in stocks:
             data_stocks[symbol]=YahooAPI.getOneYearYields(symbol, lg=True)
         CorrMatrix = data_stocks.corr()
-        print(CorrMatrix)
+        #print("CorrMatrix")
+        #print(CorrMatrix)
         return CorrMatrix
 
+    
+        
 
     def multiPortfolio(self):
-        stocks = ["KO","BNTX","MSFT","DB"]
-        yields = [0.25,0.3,0.4,-0.13]
-        #rndm_nr = np.empty()
-        #port_shares = np.empty(0)
-        #i = 0
-        #while i < len(stocks):
-         #   np.append(rndm_nr, random.random())
-          #  i += 1
-        #print(rndm_nr)
+        stocks = ["SAP","KO","MSFT","DB","DAX"]
+        yields = [0.325,-0.021,0.047,-0.043,0.14]
+        
+        data_stocks = pd.DataFrame()
+        for symbol in stocks:
+            data_stocks[symbol]=YahooAPI.getOneYearYields(symbol, lg=True)
+        #calculate the yield for one year for each stock in data_stocks
+        data_stocks = data_stocks.pct_change()
+        data_stocks = data_stocks.mean()
+        data_stocks = data_stocks * Stock.tradingdays
 
-
+        print("Data Stocks")
+        print(data_stocks)
+       
         randomMatrix = np.random.rand(500,len(stocks))
         sumRandomMatrix = np.sum(randomMatrix, axis=1)
         divisionMatix = np.tile(sumRandomMatrix, (len(stocks),1))
         anteilMatrix = randomMatrix / divisionMatix.T
-
+        #print("AnteilMatrix")
+        #print(anteilMatrix)
         #yieldsBigMatrix = np.tile(yields, (500,1))
         #print("Yield Matrix")
         #print(yieldsBigMatrix.T)
@@ -98,9 +107,9 @@ class Portfolio():
         riskMatrix = np.matmul(riskMatrix, anteilMatrix.T)
         riskVector = np.diagonal(riskMatrix)
         riskVector = np.sqrt(riskVector)
-        print("riskVector")
-        print(riskVector)
-        print(portfolioRenditeVector)
+        #print("riskVector")
+        #print(riskVector)
+        #print(portfolioRenditeVector)
         f = open("risk.txt","w")
         for i in riskVector:
             f.write(str(i)+"\n") 
@@ -109,6 +118,48 @@ class Portfolio():
             p.write(str(i)+"\n")
         f.close()
         p.close()
+        plt.plot(riskVector,portfolioRenditeVector, 'ro', markersize=1)
+        varCovMatrix = self.VarKovMatrix(stocks)
+
+        weights = self.optimize_portfolio(varCovMatrix)
+        print("Weights")
+        print(weights)
+
+        minimumVarianzRendite = np.dot(weights,yields)
+        minimumStandartabweichungRisiko = np.sqrt(np.dot(weights.T, np.dot(varCovMatrix, weights)))
+
+        print("Minimum Varianz Rendite")
+        print(minimumVarianzRendite)
+        print("Minimum Standartabweichung Risiko")
+        print(minimumStandartabweichungRisiko)
+
+        
+
+    def portfolioVariance(self, weight, varcov):
+        return np.dot(weight.T, np.dot(varcov, weight))
+        
+
+    def optimize_portfolio(self, varCovMatrix):
+        constraints = ({'type': 'eq', 'fun': lambda x:  np.sum(x) - 1})
+        bounds = tuple((0,1) for x in range(varCovMatrix.shape[0]))
+        num_assets = varCovMatrix.shape[0]
+        args = (varCovMatrix)
+        initial_guess = num_assets * [1. / num_assets,]
+        result = minimize(self.portfolioVariance, initial_guess, args=args, method='SLSQP', bounds=bounds, constraints=constraints)
+        return result.x
+    
+
+
+
+        
+    
+
+
+
+        
+
+
+        
 
 
     def multiPortfolioHelper(self,varkovMatrixVector,anteilMatrix):
@@ -116,8 +167,7 @@ class Portfolio():
         return np.dot(anteilMatrix,varkovMatrixVector)
 
 
-    #Relative Häufigkeiten Einzelwerte
-    
+    #Relative Häufigkeiten Einzelwerte 
     def distributionYields(self):
         stocks = ["SAP","BNTX"]
         Yields = [0.2]
@@ -134,7 +184,7 @@ class Portfolio():
   
             oneYearYields = YahooAPI.getOneYearYields(stocks[i], lg=False)
             print(oneYearYields)
-            oneYearYields.hist(ax = axes[i],legend=True,bins = 20);
+            oneYearYields.hist(ax = axes[i],legend=True,bins = 20)
 
 
 
@@ -145,11 +195,12 @@ class Portfolio():
         #For Schleife zum erstellen der relativen Häufigkeiten (Yields)
         #for stock in stocks:
 
-
+    
 
 
 portfolioOne = Portfolio(1)
-portfolioOne.distributionYields()
+portfolioOne.multiPortfolio()
+plt.show()
 
 
 
